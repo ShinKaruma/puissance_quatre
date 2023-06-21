@@ -6,10 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -34,6 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'player2', targetEntity: Partie::class)]
     private Collection $parties;
+
+    #[ORM\Column]
+    private ?int $scoreTotal = null;
 
     public function __construct()
     {
@@ -167,6 +172,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $party->setPlayer2(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getScoreTotal(): ?int
+    {
+        return $this->scoreTotal;
+    }
+
+    public function setScoreTotal(int $scoreTotal): static
+    {
+        $this->scoreTotal = $scoreTotal;
 
         return $this;
     }

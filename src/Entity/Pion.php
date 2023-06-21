@@ -62,4 +62,12 @@ class Pion
 
         return $this;
     }
+
+    public function checkPos(int $posVer, int $posHor) : bool {
+        if ($posHor == $this->posHor and $posVer == $this->posVer) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

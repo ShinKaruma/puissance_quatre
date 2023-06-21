@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\GrilleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GrilleRepository::class)]
 class Grille
@@ -14,13 +15,13 @@ class Grille
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(value: 0)]
     private ?int $hauteur = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(value: 0)]
     private ?int $largeur = null;
 
-    #[ORM\Column]
-    private ?bool $is_pleine = null;
 
     public function getId(): ?int
     {
@@ -47,18 +48,6 @@ class Grille
     public function setLargeur(int $largeur): self
     {
         $this->largeur = $largeur;
-
-        return $this;
-    }
-
-    public function isIsPleine(): ?bool
-    {
-        return $this->is_pleine;
-    }
-
-    public function setIsPleine(bool $is_pleine): self
-    {
-        $this->is_pleine = $is_pleine;
 
         return $this;
     }

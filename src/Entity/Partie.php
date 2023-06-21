@@ -133,4 +133,25 @@ class Partie
 
         return $this;
     }
+
+    function checkPosLibre(int $posVer, int $posHor) : ?Pion {
+        foreach($this->pions as $pion){
+            if ($pion->checkPos($posVer, $posHor)) {
+                return $pion;
+            }
+        }  
+        return null;      
+    }
+
+    function is_full() : bool {
+        for ($i=0; $i < $this->Grille->getHauteur(); $i++) { 
+            for ($j=0; $j < $this->Grille->getLargeur(); $j++) { 
+                if ($this->checkPosLibre($i, $j) == null) {
+                    return false;
+                } 
+            }
+        }
+        return true;
+    }
+    
 }
