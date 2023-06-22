@@ -1,0 +1,18 @@
+<table>
+	<thead>
+		<tr>
+			<th>Classement</th>
+			<th>Nom d'utilisateur</th>
+			<th>Score total</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+			<tr>
+				<td>{{ loop.index }}</td>
+				<td>{{ user.username }}</td>
+				<td>{{ user.scoreTotal }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>

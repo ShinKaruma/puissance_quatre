@@ -9,8 +9,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class IndexController extends AbstractController
 {
     #[Route('/', name: 'app_redirect')]
-    public function index(): Response
+    public function indexRedirect(): Response
     {
         return $this->redirectToRoute('app_login');
+    }
+
+    #[Route('/index', name: 'app_index')]
+    public function index() : Response {
+        return $this->render('index/index.html.twig',[
+            
+        ]);
     }
 }
