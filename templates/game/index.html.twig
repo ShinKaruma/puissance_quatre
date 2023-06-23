@@ -1,37 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Pas d'idée 4
+{% block content %}
+    <h1>Bienvenue sur le jeu</h1>
+
+    <h2>Joueurs :</h2>
+    <ul>
+        <li>{{ partie.player1.username }}</li>
+        <li>{{ partie.player2.username }}</li>
+    </ul>
+
+    <h2>Grille :</h2>
+    <p>Hauteur : {{ grille.hauteur }}</p>
+    <p>Largeur : {{ grille.largeur }}</p>
+
+    <h2>Pions :</h2>
+    <table>
+        <thead>
+            <tr>
+                {% for i in 0..grille.largeur - 1 %}
+                    <th>{{ i }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in 0..grille.hauteur - 1 %}
+                <tr>
+                    {% for j in 0..grille.largeur - 1 %}
+                        <td>
+                            {% set pion = partie.checkPosLibre(i, j) %}
+                            {% if pion is not null %}
+                                {{ pion.id }}
+                            {% else %}
+                                <button onclick="jouerCoup({{ i }}, {{ j }})">Jouer</button>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if isGrillePleine %}
+        <p>La grille est pleine. La partie est terminée.</p>
+    {% else %}
+        <p>La grille n'est pas pleine.</p>
+    {% endif %}
+
+    {% if partie.isTerminee %}
+        <h2>Fin de partie :</h2>
+        <p>Le joueur gagnant est : {{ partie.gagnant.username }}</p>
+        <p>Score du joueur 1 : {{ partie.scoreJoueur1 }}</p>
+        <p>Score du joueur 2 : {{ partie.scoreJoueur2 }}</p>
+    {% endif %}
+
+    <script>
+        function jouerCoup(x, y) {
+            // Logique de jeu pour jouer le coup aux coordonnées (x, y)
+            // Envoyer les informations au serveur, mettre à jour la partie et recharger la page si nécessaire
+        }
+    </script>
 {% endblock %}
-
-{% block body %}
-	<h1>Puissance 4</h1>
-
-	<div class="grid">
-		{% for row in grille %}
-			<div class="row">
-				{% for cell in row %}
-					<div class="cell">
-						{% if cell %}
-							<span class="pion">{{ cell }}</span>
-						{% else %}
-							<span class="empty"></span>
-						{% endif %}
-					</div>
-				{% endfor %}
-			</div>
-		{% endfor %}
-	</div>
-
-	<div class="scores">
-		<div class="player">
-			<span class="player-name">{{ partie.player1.username }}</span>
-			<span class="player-score">{{ partie.scoreP1 }}</span>
-		</div>
-		<div class="player">
-			<span class="player-name">{{ partie.player2.username }}</span>
-			<span class="player-score">{{ partie.scoreP2 }}</span>
-		</div>
-	</div>
-
-{% endblock %}
-
