@@ -38,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $parties;
 
     #[ORM\Column]
-    private ?int $scoreTotal = null;
+    private ?int $scoreTotal = 0;
 
     public function __construct()
     {

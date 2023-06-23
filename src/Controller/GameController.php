@@ -6,13 +6,58 @@ use App\Entity\Grille;
 use App\Entity\Partie;
 use App\Entity\Pion;
 use App\Entity\User;
+use App\Repository\PartieRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class GameController extends AbstractController
 {
-    #[Route('/game', name: 'app_game')]
+    #[Route('/listgame', name: 'app_listgame')]
+    public function listgame(PartieRepository $partieRepository): Response
+    {
+        return $this->render('game/listgame.html.twig', [
+            'parties' => $partieRepository->findAll(),
+        ]);
+    }
+
+    #[Route('/partie/{id}/rejoindre', name: 'rejoindre_partie')]
+    public function rejoindrePartie(Partie $partie): Response
+    {
+        $user2 = $this->getUser();
+        $partie->setPlayer2($user2);
+
+        return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
+    }
+
+    #[Route('/game/create', name: 'app_game_create')]
+    public function create(PartieRepository $partieRepository) : Response {
+        $partie = new Partie();
+
+        $grille = new Grille();
+        $grille->setHauteur(6);
+        $grille->setLargeur(7);
+        $partie->setGrille($grille);
+
+        $user1 = $this->getUser();
+        $partie->setPlayer1($user1);
+
+        $partieRepository->save($partie, true);
+
+        return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
+    }
+
+
+    #[Route('/game/{id}', name: 'app_game_play')]
+    function gamePlay(int $id, PartieRepository $partieRepository) : Response {
+
+        $partie = $partieRepository->findOneBy(['id' => $id]);
+        return $this->render('game/index.html.twig', [
+            'partie' => $partie,
+        ]);
+    }
+
+    #[Route('/game/test', name: 'app_game_test')]
     public function index(): Response
     {
         // Créer une nouvelle partie avec une grille de 6x7
@@ -24,8 +69,9 @@ class GameController extends AbstractController
         $partie->setGrille($grille);
 
         // Récupérer les utilisateurs joueurs de la partie
-        $user1 = $partie->getPlayer1(); // Utilisateur assigné à la partie (Joueur 1)
-        $user2 = $partie->getPlayer2(); // Utilisateur assigné à la partie (Joueur 2)
+        
+        $user1 = $this->getUser(); // Utilisateur assigné à la partie (Joueur 1)
+        $user2 = $this->getUser(); // Utilisateur assigné à la partie (Joueur 2)
 
         // Vérifier si les deux joueurs sont présents
         // if (!$user1 || !$user2) {
@@ -36,28 +82,9 @@ class GameController extends AbstractController
         $partie->setPlayer1($user1);
         $partie->setPlayer2($user2);
 
-        // Créer les pions pour la partie
-        for ($i = 0; $i < $grille->getHauteur(); $i++) {
-            for ($j = 0; $j < $grille->getLargeur(); $j++) {
-                $pion = new Pion();
-                $pion->setPosVer($i);
-                $pion->setPosHor($j);
-                $partie->addPion($pion);
-            }
-        }
-
-        // Vérifier si la grille est pleine
-        $isGrillePleine = $partie->is_full();
-
-        // Placez les pions sur la grille
-        foreach ($partie->getPions() as $pion) {
-            $grille->placerPion($pion->getPosVer(), $pion->getPosHor(), $pion);
-        }
-
         return $this->render('game/index.html.twig', [
             'partie' => $partie,
             'grille' => $grille,
-            'isGrillePleine' => $isGrillePleine,
         ]);
     }
 }

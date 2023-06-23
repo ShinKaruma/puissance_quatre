@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PartieRepository;
+use App\Entity\Pion;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,10 +17,10 @@ class Partie
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $scoreP1 = null;
+    private ?int $scoreP1 = 0;
 
     #[ORM\Column]
-    private ?int $scoreP2 = null;
+    private ?int $scoreP2 = 0;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
@@ -152,6 +153,16 @@ class Partie
             }
         }
         return true;
+    }
+
+    function placerPion(int $posHor, int $posVer) : self 
+    {
+        $pion = new Pion();
+        $pion->setPosHor($posHor);
+        $pion->setPosVer($posVer);
+        $this->addPion($pion);
+
+        return $this;
     }
     
 }

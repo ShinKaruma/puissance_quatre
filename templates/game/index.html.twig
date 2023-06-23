@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block content %}
+{% block body %}
     <h1>Bienvenue sur le jeu</h1>
 
     <h2>Joueurs :</h2>
@@ -15,23 +15,16 @@
 
     <h2>Pions :</h2>
     <table>
-        <thead>
-            <tr>
-                {% for i in 0..grille.largeur - 1 %}
-                    <th>{{ i }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
         <tbody>
-            {% for i in 0..grille.hauteur - 1 %}
+            {% for i in 0..partie.grille.hauteur - 1 %}
                 <tr>
-                    {% for j in 0..grille.largeur - 1 %}
+                    {% for j in 0..partie.grille.largeur - 1 %}
                         <td>
                             {% set pion = partie.checkPosLibre(i, j) %}
                             {% if pion is not null %}
                                 {{ pion.id }}
                             {% else %}
-                                <button onclick="jouerCoup({{ i }}, {{ j }})">Jouer</button>
+                                <button >Jouer</button>
                             {% endif %}
                         </td>
                     {% endfor %}
@@ -40,18 +33,18 @@
         </tbody>
     </table>
 
-    {% if isGrillePleine %}
+    {% if partie.is_full() %}
         <p>La grille est pleine. La partie est terminée.</p>
     {% else %}
         <p>La grille n'est pas pleine.</p>
     {% endif %}
 
-    {% if partie.isTerminee %}
+    {# {% if partie.isTerminee %}
         <h2>Fin de partie :</h2>
         <p>Le joueur gagnant est : {{ partie.gagnant.username }}</p>
         <p>Score du joueur 1 : {{ partie.scoreJoueur1 }}</p>
         <p>Score du joueur 2 : {{ partie.scoreJoueur2 }}</p>
-    {% endif %}
+    {% endif %} #}
 
     <script>
         function jouerCoup(x, y) {
