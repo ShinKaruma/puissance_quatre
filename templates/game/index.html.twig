@@ -27,22 +27,17 @@
                 {% for i in 0..partie.grille.hauteur - 1 %}
                     <tr>
                         {% for j in 0..partie.grille.largeur - 1 %}
-                            
                                 {% set pion = partie.checkPosLibre(i, j) %}
                                 {% if pion is not null %}
-                                <td>
+                                <td style="background-color:{{ pion.couleur }};" >
                                 </td>
                                 {% else %}
                                     <td>
-
-                                    
-                                    
                                     {% if partie.playerEnCours == user %}
                                         <a href='/game/{{partie.id}}/turn/{{j}}/{{i}}'> Placer ici</a>
                                     {% else %}
                                         <a href='#'> Placer ici</a>
                                     {% endif %}
-                                    
                                     </td>
                                 {% endif %}
                             
@@ -52,17 +47,4 @@
             </tbody>
         </table>
     {% endif %}
-    {% if partie.checkIsFull() %}
-        <p>La grille est pleine. La partie est terminée.</p>
-    {% else %}
-        <p>La grille n'est pas pleine.</p>
-    {% endif %}
-
-    {# {% if partie.isTerminee %}
-        <h2>Fin de partie :</h2>
-        <p>Le joueur gagnant est : {{ partie.gagnant.username }}</p>
-        <p>Score du joueur 1 : {{ partie.scoreJoueur1 }}</p>
-        <p>Score du joueur 2 : {{ partie.scoreJoueur2 }}</p>
-    {% endif %} #}
-
 {% endblock %}

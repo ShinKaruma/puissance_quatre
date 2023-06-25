@@ -11,6 +11,9 @@
         {% endblock %}
     </head>
     <body>
+        <nav>
+            {{if {{ is_granted("IS_AUTHENTICATED_FULLY") }}}}
+        <nav>
         {% block body %}{% endblock %}
     </body>
 </html>

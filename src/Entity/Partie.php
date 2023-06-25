@@ -139,27 +139,29 @@ class Partie
         return $this;
     }
 
-    function checkPosLibre(int $posVer, int $posHor) : ?Pion {
-        foreach($this->pions as $pion){
+    function checkPosLibre(int $posVer, int $posHor): ?Pion
+    {
+        foreach ($this->pions as $pion) {
             if ($pion->checkPos($posVer, $posHor)) {
                 return $pion;
             }
-        }  
-        return null;      
+        }
+        return null;
     }
 
-    function checkIsFull() : bool {
-        for ($i=0; $i < $this->Grille->getHauteur(); $i++) { 
-            for ($j=0; $j < $this->Grille->getLargeur(); $j++) { 
+    function checkIsFull(): bool
+    {
+        for ($i = 0; $i < $this->Grille->getHauteur(); $i++) {
+            for ($j = 0; $j < $this->Grille->getLargeur(); $j++) {
                 if ($this->checkPosLibre($i, $j) == null) {
                     return false;
-                } 
+                }
             }
         }
         return true;
     }
 
-    function placerPion(PionRepository $pionRepository, int $posHor, int $posVer, string $couleur) : self 
+    function placerPion(PionRepository $pionRepository, int $posHor, int $posVer, string $couleur): self
     {
         $pion = new Pion();
         $pion->setPosHor($posHor);
@@ -182,5 +184,148 @@ class Partie
 
         return $this;
     }
-    
+
+    // Vérifie si une ligne de pions de même couleur existe dans la grille
+    public function checkLignes(string $couleur): int
+    {
+        $hauteur = $this->Grille->getHauteur();
+        $largeur = $this->Grille->getLargeur();
+        $compteurLignes = 0;
+
+        for ($i = 0; $i < $hauteur; $i++) {
+            $pionsLigne = 0;
+
+            for ($j = 0; $j < $largeur; $j++) {
+                $pion = $this->checkPosLibre($i, $j);
+
+                if ($pion !== null && $pion->getCouleur() === $couleur) {
+                    $pionsLigne++;
+                } else {
+                    $pionsLigne = 0;
+                }
+
+                if ($pionsLigne === 4) {
+                    $compteurLignes++;
+                    $pionsLigne = 0;
+                }
+            }
+        }
+
+        return $compteurLignes;
+    }
+
+    // Vérifie si une colonne de pions de même couleur existe dans la grille
+    public function checkColonnes(string $couleur): int
+    {
+        $hauteur = $this->Grille->getHauteur();
+        $largeur = $this->Grille->getLargeur();
+        $compteurColonnes = 0;
+
+        for ($j = 0; $j < $largeur; $j++) {
+            $pionsColonne = 0;
+
+            for ($i = 0; $i < $hauteur; $i++) {
+                $pion = $this->checkPosLibre($i, $j);
+
+                if ($pion !== null && $pion->getCouleur() === $couleur) {
+                    $pionsColonne++;
+                } else {
+                    $pionsColonne = 0;
+                }
+
+                if ($pionsColonne === 4) {
+                    $compteurColonnes++;
+                    $pionsColonne = 0;
+                }
+            }
+        }
+
+        return $compteurColonnes;
+    }
+
+
+    // Vérifie si une diagonale ascendante de pions de même couleur existe dans la grille
+    public function checkDiagonalesAsc(string $couleur): int
+    {
+        $hauteur = $this->Grille->getHauteur();
+        $largeur = $this->Grille->getLargeur();
+        $compteurDiagonales = 0;
+
+        // Vérification des diagonales ascendantes
+        for ($i = 3; $i < $hauteur; $i++) {
+            for ($j = 0; $j < $largeur - 3; $j++) {
+                $pionsDiagonale = 0;
+
+                for ($k = 0; $k < 4; $k++) {
+                    $pion = $this->checkPosLibre($i - $k, $j + $k);
+
+                    if ($pion !== null && $pion->getCouleur() === $couleur) {
+                        $pionsDiagonale++;
+                    } else {
+                        $pionsDiagonale = 0;
+                    }
+
+                    if ($pionsDiagonale === 4) {
+                        $compteurDiagonales++;
+                        $pionsDiagonale = 0;
+                    }
+                }
+            }
+        }
+
+        return $compteurDiagonales;
+    }
+
+    // Vérifie si une diagonale descendante de pions de même couleur existe dans la grille
+    public function checkDiagonalesDesc(string $couleur): int
+    {
+        $hauteur = $this->Grille->getHauteur();
+        $largeur = $this->Grille->getLargeur();
+        $compteurDiagonales = 0;
+
+        // Vérification des diagonales descendantes
+        for ($i = 0; $i < $hauteur - 3; $i++) {
+            for ($j = 0; $j < $largeur - 3; $j++) {
+                $pionsDiagonale = 0;
+
+                for ($k = 0; $k < 4; $k++) {
+                    $pion = $this->checkPosLibre($i + $k, $j + $k);
+
+                    if ($pion !== null && $pion->getCouleur() === $couleur) {
+                        $pionsDiagonale++;
+                    } else {
+                        $pionsDiagonale = 0;
+                    }
+
+                    if ($pionsDiagonale === 4) {
+                        $compteurDiagonales++;
+                        $pionsDiagonale = 0;
+                    }
+                }
+            }
+        }
+
+        return $compteurDiagonales;
+    }
+
+    // Calcule le nombre de points pour un joueur en fonction des lignes, colonnes et diagonales gagnantes
+    public function calculatePoints(string $couleur): int
+    {
+        $points = 0;
+
+        if ($this->checkLignes($couleur)) {
+            $points += 1;
+        }
+        if ($this->checkColonnes($couleur)) {
+            $points += 1;
+        }
+        if ($this->checkDiagonalesAsc($couleur)) {
+            $points += 1;
+        }
+        if ($this->checkDiagonalesDesc($couleur)) {
+            $points += 1;
+        }
+
+        return $points;
+    }
 }
