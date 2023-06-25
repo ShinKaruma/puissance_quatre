@@ -12,7 +12,13 @@
     </head>
     <body>
         <nav>
-            {{if {{ is_granted("IS_AUTHENTICATED_FULLY") }}}}
+            {% if is_granted("IS_AUTHENTICATED_FULLY") %}
+                <a class="nav-link" href="{{ path('app_index') }}">index</a>
+                <a class="nav-link" href="{{ path('app_game_create') }}">Créer partie</a>
+                <a class="nav-link" href="{{ path('app_listgame') }}">Liste des parties a rejoindre</a>
+                <a class="nav-link" href="{{ path('app_listgame') }}">Liste des parties a reprendre</a>
+                <a class="nav-link" href="{{ path('app_logout') }}">Logout</a>
+            {% endif %}
         <nav>
         {% block body %}{% endblock %}
     </body>

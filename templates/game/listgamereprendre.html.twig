@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des parties</h1>
+
+    {% if parties is not empty %}
+        <ul>
+            {% for partie in parties %}
+                <li>
+                    Partie {{ partie.id }} - Joueur 1: {{ partie.player1.username }}
+                    <a href="{{ path('reprendre_partie', {'id': partie.id}) }}">reprendre la partie</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune partie trouvée.</p>
+    {% endif %}
+{% endblock %}

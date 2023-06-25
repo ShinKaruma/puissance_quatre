@@ -180,7 +180,7 @@ class GameController extends AbstractController
     #[Route('/listgamereprendre', name: 'app_listgame_reprendre')]
     public function listGameReprendre(PartieRepository $partieRepository): Response
     {
-        return $this->render('game/listgame.html.twig', [
+        return $this->render('game/listgamereprendre.html.twig', [
             'parties' => $partieRepository->findByPlayer($this->getUser()),
         ]);
     }
