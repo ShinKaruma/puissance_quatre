@@ -116,35 +116,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection<int, Partie>
-     */
-    public function getPartie(): Collection
-    {
-        return $this->Partie;
-    }
+    // /**
+    //  * @return Collection<int, Partie>
+    //  */
+    // public function getPartie(): Collection
+    // {
+    //     return $this->Partie;
+    // }
 
-    public function addPartie(Partie $partie): self
-    {
-        if (!$this->Partie->contains($partie)) {
-            $this->Partie->add($partie);
-            $partie->setPlayer1($this);
-        }
+    // public function addPartie(Partie $partie): self
+    // {
+    //     if (!$this->Partie->contains($partie)) {
+    //         $this->Partie->add($partie);
+    //         $partie->setPlayer1($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removePartie(Partie $partie): self
-    {
-        if ($this->Partie->removeElement($partie)) {
-            // set the owning side to null (unless already changed)
-            if ($partie->getPlayer1() === $this) {
-                $partie->setPlayer1(null);
-            }
-        }
+    // public function removePartie(Partie $partie): self
+    // {
+    //     if ($this->Partie->removeElement($partie)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($partie->getPlayer1() === $this) {
+    //             $partie->setPlayer1(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, Partie>

@@ -7,6 +7,7 @@ use App\Entity\Partie;
 use App\Entity\Pion;
 use App\Entity\User;
 use App\Repository\PartieRepository;
+use App\Repository\PionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,43 +18,55 @@ class GameController extends AbstractController
     public function listgame(PartieRepository $partieRepository): Response
     {
         return $this->render('game/listgame.html.twig', [
-            'parties' => $partieRepository->findAll(),
+            'parties' => $partieRepository->findBy(['player2' => null]),
         ]);
     }
 
     #[Route('/partie/{id}/rejoindre', name: 'rejoindre_partie')]
-    public function rejoindrePartie(Partie $partie): Response
+    public function rejoindrePartie(Partie $partie, PartieRepository $partieRepository): Response
     {
         $user2 = $this->getUser();
         $partie->setPlayer2($user2);
-
-        return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
-    }
-
-    #[Route('/game/create', name: 'app_game_create')]
-    public function create(PartieRepository $partieRepository) : Response {
-        $partie = new Partie();
-
-        $grille = new Grille();
-        $grille->setHauteur(6);
-        $grille->setLargeur(7);
-        $partie->setGrille($grille);
-
-        $user1 = $this->getUser();
-        $partie->setPlayer1($user1);
 
         $partieRepository->save($partie, true);
 
         return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
     }
 
+    #[Route('/game/create', name: 'app_game_create')]
+    public function create(PartieRepository $partieRepository): Response
+    {
+        $user = $this->getUser();
+
+
+        if (count($user->getParties()) === 0) {
+            $partie = new Partie();
+
+            $grille = new Grille();
+            $grille->setHauteur(6);
+            $grille->setLargeur(7);
+            $partie->setGrille($grille);
+
+            $user1 = $this->getUser();
+            $partie->setPlayer1($user1);
+
+            $partieRepository->save($partie, true);
+
+            return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
+        } else {
+            return $this->redirectToRoute('app_listgame');
+        }
+    }
+
 
     #[Route('/game/{id}', name: 'app_game_play')]
-    function gamePlay(int $id, PartieRepository $partieRepository) : Response {
+    function gamePlay(Partie $partie): Response
+    {
 
-        $partie = $partieRepository->findOneBy(['id' => $id]);
+        $user = $this->getUser();
         return $this->render('game/index.html.twig', [
             'partie' => $partie,
+            'user' => $user
         ]);
     }
 
@@ -69,7 +82,7 @@ class GameController extends AbstractController
         $partie->setGrille($grille);
 
         // Récupérer les utilisateurs joueurs de la partie
-        
+
         $user1 = $this->getUser(); // Utilisateur assigné à la partie (Joueur 1)
         $user2 = $this->getUser(); // Utilisateur assigné à la partie (Joueur 2)
 
@@ -85,6 +98,39 @@ class GameController extends AbstractController
         return $this->render('game/index.html.twig', [
             'partie' => $partie,
             'grille' => $grille,
+        ]);
+    }
+
+    #[Route('/game/{id}/turn/{posHor}/{posVer}', name: 'app_game_turn')]
+    function playTurn(Partie $partie, int $posHor, int $posVer, PionRepository $pionRepository, PartieRepository $partieRepository): Response
+    {
+        $user = $this->getUser();
+
+        if ($user == $partie->getPlayer1()) {
+            $partie->placerPion($pionRepository, $posHor, $posVer, "#ff0000");
+            $partie->setPlayerEnCours($partie->getPlayer2());
+        } else if ($user == $partie->getPlayer2()) {
+            $partie->placerPion($pionRepository, $posHor, $posVer, "#ffff00");
+            $partie->setPlayerEnCours($partie->getPlayer1());
+        }
+
+        $partieRepository->save($partie, true);
+
+        return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
+    }
+
+
+    #[Route('/partie/{id}/reprendre', name: 'rejoindre_partie')]
+    public function reprendrePartie(Partie $partie): Response
+    {
+        return $this->redirectToRoute('app_game_play', ['id' => $partie->getId()]);
+    }
+
+    #[Route('/listgamereprendre', name: 'app_listgame_reprendre')]
+    public function listGameReprendre(PartieRepository $partieRepository): Response
+    {
+        return $this->render('game/listgame.html.twig', [
+            'parties' => $partieRepository->findByPlayer($this->getUser()),
         ]);
     }
 }

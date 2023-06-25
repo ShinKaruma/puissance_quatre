@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PartieRepository;
 use App\Entity\Pion;
+use App\Repository\PionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -34,6 +35,9 @@ class Partie
 
     #[ORM\OneToMany(mappedBy: 'Partie', targetEntity: Pion::class)]
     private Collection $pions;
+
+    #[ORM\ManyToOne]
+    private ?User $playerEnCours = null;
 
     public function __construct()
     {
@@ -144,7 +148,7 @@ class Partie
         return null;      
     }
 
-    function is_full() : bool {
+    function checkIsFull() : bool {
         for ($i=0; $i < $this->Grille->getHauteur(); $i++) { 
             for ($j=0; $j < $this->Grille->getLargeur(); $j++) { 
                 if ($this->checkPosLibre($i, $j) == null) {
@@ -155,12 +159,26 @@ class Partie
         return true;
     }
 
-    function placerPion(int $posHor, int $posVer) : self 
+    function placerPion(PionRepository $pionRepository, int $posHor, int $posVer, string $couleur) : self 
     {
         $pion = new Pion();
         $pion->setPosHor($posHor);
         $pion->setPosVer($posVer);
+        $pion->setCouleur($couleur);
         $this->addPion($pion);
+        $pionRepository->save($pion, true);
+
+        return $this;
+    }
+
+    public function getPlayerEnCours(): ?User
+    {
+        return $this->playerEnCours;
+    }
+
+    public function setPlayerEnCours(?User $playerEnCours): static
+    {
+        $this->playerEnCours = $playerEnCours;
 
         return $this;
     }

@@ -6,34 +6,53 @@
     <h2>Joueurs :</h2>
     <ul>
         <li>{{ partie.player1.username }}</li>
-        <li>{{ partie.player2.username }}</li>
+        {% if partie.player2 is null %}
+            <li> en attente d'un deuxieme joueur </li>
+        {% else %}
+            <li>{{ partie.player2.username }}</li>
+        {% endif %}
+        
     </ul>
 
     <h2>Grille :</h2>
-    <p>Hauteur : {{ grille.hauteur }}</p>
-    <p>Largeur : {{ grille.largeur }}</p>
+    <p>Hauteur : {{ partie.grille.hauteur }}</p>
+    <p>Largeur : {{ partie.grille.largeur }}</p>
 
     <h2>Pions :</h2>
-    <table>
-        <tbody>
-            {% for i in 0..partie.grille.hauteur - 1 %}
-                <tr>
-                    {% for j in 0..partie.grille.largeur - 1 %}
-                        <td>
-                            {% set pion = partie.checkPosLibre(i, j) %}
-                            {% if pion is not null %}
-                                {{ pion.id }}
-                            {% else %}
-                                <button >Jouer</button>
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% if partie.player2 is null %}
+        <li> en attente d'un deuxieme joueur </li>
+    {% else %}
+        <table>
+            <tbody>
+                {% for i in 0..partie.grille.hauteur - 1 %}
+                    <tr>
+                        {% for j in 0..partie.grille.largeur - 1 %}
+                            
+                                {% set pion = partie.checkPosLibre(i, j) %}
+                                {% if pion is not null %}
+                                <td>
+                                </td>
+                                {% else %}
+                                    <td>
 
-    {% if partie.is_full() %}
+                                    
+                                    
+                                    {% if partie.playerEnCours == user %}
+                                        <a href='/game/{{partie.id}}/turn/{{j}}/{{i}}'> Placer ici</a>
+                                    {% else %}
+                                        <a href='#'> Placer ici</a>
+                                    {% endif %}
+                                    
+                                    </td>
+                                {% endif %}
+                            
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {% if partie.checkIsFull() %}
         <p>La grille est pleine. La partie est terminée.</p>
     {% else %}
         <p>La grille n'est pas pleine.</p>
@@ -46,10 +65,4 @@
         <p>Score du joueur 2 : {{ partie.scoreJoueur2 }}</p>
     {% endif %} #}
 
-    <script>
-        function jouerCoup(x, y) {
-            // Logique de jeu pour jouer le coup aux coordonnées (x, y)
-            // Envoyer les informations au serveur, mettre à jour la partie et recharger la page si nécessaire
-        }
-    </script>
 {% endblock %}

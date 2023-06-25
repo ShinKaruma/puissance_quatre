@@ -22,6 +22,9 @@ class Pion
     #[ORM\ManyToOne(inversedBy: 'pions')]
     private ?Partie $Partie = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $couleur = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,5 +72,17 @@ class Pion
         }else{
             return false;
         }
+    }
+
+    public function getCouleur(): ?string
+    {
+        return $this->couleur;
+    }
+
+    public function setCouleur(string $couleur): static
+    {
+        $this->couleur = $couleur;
+
+        return $this;
     }
 }
